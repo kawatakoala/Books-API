@@ -1,17 +1,27 @@
 const express = require('express')
+const mongoose = require('mongoose')
 const app = express()
 
-// CONFIGURATION
+// CONFIG/MIDDLEWARE
 require('dotenv').config()
 const PORT = process.env.PORT
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true },
-    () => { console.log('connected to mongo: ', process.env.MONGO_URI) }
-)
-
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
-
 app.use(express.json())
 
-app.listen(3000)
+// MONGOOSE
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true }, () => {
+    console.log('connected to mongo on: ', process.env.MONGO_URI)
+})
+
+// ROOT 
+app.get('/', (req, res) => {
+    res.send('Hello World')
+})
+
+// BOOKS 
+const booksController = require('./controllers/books_controller')
+app.use('/books', booksController)
+
+// LISTEN
+app.listen(PORT, () => {
+    console.log(`Listening on port: ${PORT}`)
+})
